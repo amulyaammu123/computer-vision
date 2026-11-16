@@ -1,0 +1,37 @@
+import cv2
+import numpy as np
+
+img = cv2.imread("scene.jpg")
+watch = cv2.imread("watch.jpg")
+
+gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+gray_watch = cv2.cvtColor(watch, cv2.COLOR_BGR2GRAY)
+
+orb = cv2.ORB_create()
+
+kp1, des1 = orb.detectAndCompute(gray_watch, None)
+kp2, des2 = orb.detectAndCompute(gray_img, None)
+
+if des1 is not None and des2 is not None:
+    matcher = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+    matches = matcher.match(des1, des2)
+
+    matches = sorted(matches, key=lambda x: x.distance)
+
+    if len(matches) >= 10:
+        print("Watch Recognized")
+        result = cv2.drawMatches(
+            watch, kp1, img, kp2, matches[:20], None,
+            flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS
+        )
+    else:
+        print("Watch Not Recognized")
+        result = img
+else:
+    print("Watch Not Recognized")
+    result = img
+
+cv2.imshow("Watch Recognition", result)
+
+cv2.waitKey(0)
+cv2.destroyAllWindows()
