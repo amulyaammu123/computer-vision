@@ -1,0 +1,23 @@
+import cv2
+
+img = cv2.imread("input.jpg")
+
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+lower = 100
+upper = 200
+
+mask = cv2.inRange(gray, lower, upper)
+
+segmented = cv2.bitwise_and(
+    img,
+    img,
+    mask=mask
+)
+
+cv2.imshow("Original Image", img)
+cv2.imshow("Segmentation Mask", mask)
+cv2.imshow("Segmented Image", segmented)
+
+cv2.waitKey(0)
+cv2.destroyAllWindows()
